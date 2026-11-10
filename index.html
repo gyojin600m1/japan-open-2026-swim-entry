@@ -290,7 +290,7 @@ function swimmerCard(s,open){
   const ro=!s.ev.length;
   return `<div class="swimmer-card${open?' open':''}"><button type="button" class="card-header" aria-expanded="${open?'true':'false'}">
     <div class="card-top"><div class="swimmer-name">${esc(s.name)}<small>${esc(s.en)}</small></div><div class="badge${ro?' ro':''}">${ro?'リレーのみ':s.ev.length+'種目'}</div></div>
-    <div class="card-meta"><span class="swimmer-team">🏊 ${teamLine(s)}</span><span class="tag">${esc(s.gr)}</span>${genTag(s)}<span class="tag num">No.${s.no}</span>${s.kg===1?'<span class="kg-tag">鹿児島出身</span>':s.kg===2?'<span class="tag">鹿児島登録</span>':''}</div>
+    <div class="card-meta"><span class="swimmer-team">🏊 ${teamLine(s)}</span><span class="tag">${esc(s.gr)}</span>${genTag(s)}<span class="tag num">No.${s.no}</span>${s.kg===1?'<span class="kg-tag">鹿児島出身</span>':''}</div>
     <div class="toggle-hint">${open?'▲ 閉じる':'▼ タップで出場種目を表示'}</div></button>
     <div class="details">${rows||'<div class="ev-item">個人種目のエントリーはありません（リレーのみ）。</div>'}
     <div class="detail-foot">${esc(s.team.full)}（${esc(s.team.pref)}・団体番号 ${esc(s.team.code)}）<br>${relays?relays+'<br>':''}<button type="button" class="linkbtn" data-team="${esc(s.tc)}">このチームの全選手を見る →</button></div></div></div>`;
@@ -385,19 +385,12 @@ const KAGO=[
 [584,'新開 誠也',1,'鹿児島情報高 出身（川内南中・Nb。インターハイ2021出場）。現 早稲田大学'],
 [636,'小西 新',1,'鹿屋女子高 出身（第一鹿屋中・Adapted。インターハイ2022〜2024出場）。現 順天堂大学'],
 [438,'後野 真衣',1,'加世田高 出身（金峰中・Kit。インターハイ2019・2021出場）。鹿屋体育大を経て現 宮崎県スポーツ協会'],
-[127,'浦田 篤志',1,'鹿児島生まれ・鹿児島育ち。甲南高 出身→広島大学→現 Ｌ！ＮＸ'],
-[741,'萬燈 祐仁',2,'出身高校：福岡大附若葉高（福岡）'],
-[742,'北村 昂大',2,'出身高校：高松北高（香川）'],
-[743,'大塚 心',2,'出身高校：日大藤沢高（神奈川）'],
-[744,'瀬津菜々美',2,'出身高校：九州学院高（熊本）'],
-[745,'宮崎 未優',2,'出身高校：京都教育大附高（京都）'],
-[442,'池嶋 勇人',2,'出身高校：美作高（岡山）。鹿屋体育大を卒業し、現 TEAM KKC']];
+[127,'浦田 篤志',1,'鹿児島生まれ・鹿児島育ち。甲南高 出身→広島大学→現 Ｌ！ＮＸ']];
 /* 選手番号が振り直されても別人に付かないよう、氏名で照合する（番号は同姓同名の区別用） */
 const KG=[];KAGO.forEach(k=>{const nm=norm(k[1]);let s=BYNO[k[0]];if(!s||norm(s.name)!==nm){const c=SW.filter(x=>norm(x.name)===nm);s=c.length===1?c[0]:null;}
   if(s){s.kg=k[2];KG.push({s,cat:k[2],note:k[3]});}});
 function showKago(){
-  const secs=[[1,'🏠 鹿児島出身','鹿児島県内の高校の出身・在学の選手。インターハイ公式記録（都道府県・学校名）などで確認しています。'],
-   [2,'🌋 鹿児島県登録（県外出身）','鹿屋体育大学・TEAM KKCから出場する選手。大学や所属が鹿児島にあるだけで、出身高校は県外です。']];
+  const secs=[[1,'🏠 鹿児島出身','鹿児島県内の高校の出身・在学の選手。今の所属が県外の大学・チームでも鹿児島出身です。']];
   let h='',total=0;const vis=KG.filter(k=>gOK(k.s,4));
   secs.forEach(sc=>{const list=vis.filter(k=>k.cat===sc[0]);if(!list.length)return;total+=list.length;
     h+=`<div class="sec-title kg">${sc[1]}　${list.length}名</div><div class="kg-lead">${sc[2]}</div>`;
@@ -407,8 +400,8 @@ function showKago(){
   h+=`<div class="sec-title kg">📣 応援スケジュール（予選・ﾀｲﾑ決勝のレース順）</div>`;
   let day=0;rows.forEach(e=>{if(e.ev.day.d!==day){day=e.ev.day.d;h+=`<div class="sess" style="padding-left:4px">${e.ev.day.label}</div>`;}
     h+=`<button type="button" class="entry-row" data-no="${e.sw.no}"><div class="rank num">${e.ev.rn.h}</div><div style="min-width:0"><div class="entry-name">${esc(e.sw.name)}${e.sw.kg===1?' <span class="kg-tag">出身</span>':''}</div><div class="entry-sub">${e.ev.g} ${e.ev.label}・${teamLine(e.sw)}</div></div><div class="entry-time"><div class="t num">${esc(e.entry)}</div><div class="s">${e.rank}位 / ${e.ev.n}名</div></div></button>`;});
-  h+=`<div class="ev-info">調べ方：出身は「高校」で判定しています。全エントリー797名を、(1) インターハイ2008〜2026年の公式記録にある鹿児島県の学校所属選手、(2) 鹿児島県水泳連盟の2022〜2026年の大会結果・県記録、(3) 国体の鹿児島県選手団成績と照合しました（2020年のインターハイは中止）。県内の大学・実業団所属の選手は出身高校を個別に確認しています。<br>インターハイ不出場で2021年以前に高校を卒業した鹿児島の高校出身者は、公開記録からは拾えません。ほかにお心当たりがあれば追加します。</div>`;
-  $('statusBar4').hidden=false;$('statusBar4').innerHTML=`鹿児島出身 <span>${vis.filter(k=>k.cat===1).length}</span>名／鹿児島関係 計<span>${total}</span>名`;
+  h+=`<div class="ev-info">調べ方：出身は「高校」で判定しています。全エントリー797名を、(1) インターハイ2008〜2026年の公式記録にある鹿児島県の学校所属選手、(2) 鹿児島県水泳連盟の2022〜2026年の大会結果・県記録、(3) 国体の鹿児島県選手団成績と照合しました（2020年のインターハイは中止）。鹿屋体育大学など県内の大学・チームの所属でも、高校が県外の選手は載せていません。<br>インターハイ不出場で2021年以前に高校を卒業した鹿児島の高校出身者は、公開記録からは拾えません。ほかにお心当たりがあれば追加します。</div>`;
+  $('statusBar4').hidden=false;$('statusBar4').innerHTML=`鹿児島出身 <span>${total}</span>名`;
   $('result4').innerHTML=h;
 }
 /* ---------- tab 4 ---------- */
