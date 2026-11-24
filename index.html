@@ -162,10 +162,7 @@ summary{min-height:48px;}
 .standard-row.female .standard-label{color:var(--femaleText);}
 .standard-times{display:flex;flex-wrap:wrap;gap:4px 14px;}
 .footer{padding:18px 16px;text-align:center;font-size:12px;color:var(--text2);line-height:1.8;}
-.footer a{display:inline-flex;align-items:center;min-height:48px;color:var(--accent);}
 .counter{margin-top:8px;min-height:22px;}
-.src{font-size:11px;color:var(--text2);line-height:1.9;padding:4px;}
-.src a{color:var(--accent);overflow-wrap:anywhere;}
 .kg-note{font-size:12px;color:var(--text2);background:rgba(255,140,66,.08);border-left:3px solid var(--kago);border-radius:0 8px 8px 0;padding:6px 10px;margin:0 0 6px;line-height:1.6;}
 .kg-tag{font-size:11px;border-radius:6px;padding:1px 8px;font-weight:700;color:#1a1005;background:var(--kago);white-space:nowrap;}
 .kg-lead{font-size:12px;color:var(--text2);line-height:1.7;padding:0 4px 8px;}
@@ -261,7 +258,6 @@ summary{min-height:48px;}
 
 <footer class="footer">
   <div>非公式エントリー確認アプリ</div>
-  <a href="https://aquatics.or.jp/tournament/57943/" target="_blank" rel="noopener">日本水泳連盟の公式資料</a>
   <div class="counter" id="viewCounter" role="status">閲覧数を取得中…</div>
 </footer>
 <script>
@@ -379,8 +375,8 @@ function schedText(ev){if(!ev.day)return'';const d=ev.day.label.replace(/^\d日�
   return `📅 ${d}｜予選 No.${ev.rn.h}`+(hasB(ev)?`・Ｂ決勝 No.${ev.rn.b}`:'')+`・決勝 No.${ev.rn.f}`;}
 function swimmerCard(s,open){
   const rows=s.ev.map(e=>{
-    const tm=(l,t,q)=>`<div><label>${l}</label><span class="num">${t?esc(t):'—'}</span>${q?`<span class="q${q==='q'?' lq':''}" title="${q==='Q'?'標準記録突破':'公式PDFの q 表記（意味の公式説明なし）'}">${esc(q)}</span>`:''}</div>`;
-    return `<div class="ev-item"><div class="ev-head"><button type="button" class="ev-name" data-ev="${e.ev.i}">${e.ev.g} ${e.ev.label}</button><span class="ev-rank">公式ランキング <b class="num">${e.rank}</b>位 / ${e.ev.n}名</span></div>
+    const tm=(l,t,q)=>`<div><label>${l}</label><span class="num">${t?esc(t):'—'}</span>${q?`<span class="q${q==='q'?' lq':''}" title="${q==='Q'?'標準記録突破':'q 表記（意味未確認）'}">${esc(q)}</span>`:''}</div>`;
+    return `<div class="ev-item"><div class="ev-head"><button type="button" class="ev-name" data-ev="${e.ev.i}">${e.ev.g} ${e.ev.label}</button><span class="ev-rank">エントリー順位 <b class="num">${e.rank}</b>位 / ${e.ev.n}名</span></div>
     <div class="times">${tm('長水路',e.lc,e.lq)}${tm('短水路',e.sc,e.sq)}${tm('ﾍﾞｽﾄﾀｲﾑ',e.best,'')}</div>
     <div class="ev-sched">${schedText(e.ev)}</div></div>`;}).join('');
   const relays=s.team.rl.length?`🔄 所属チームのリレー：${s.team.rl.map(r=>'混合4×100m '+r.ev).join('、')}`:'';
@@ -441,7 +437,7 @@ function evBlock(ev){
   const st=stdOf(ev),note=stdNote(ev);
   let h=`<div class="gender-block-title ${ev.g==='男子'?'male':'female'}">${ev.g==='男子'?'🔵':'🔴'} ${ev.g} ${ev.label}　<span class="num">${ev.n}</span>名</div>
   <div class="ev-info">${schedText(ev)}<br>🎯 標準記録：${note?`<b>${esc(note)}</b>`:st?`長水路 <b class="num">${st.lc}</b>／短水路 <b class="num">${st.sc}</b>`:'設定なし'}<br>
-  ${ev.tf?'タイムレース決勝':hasB(ev)?'予選→Ｂ決勝（9〜16位）・決勝（上位8名）':'予選→決勝（上位8名）※申込25名未満のためＢ決勝なし'}<br>並び順・順位は公式「種目別エントリーランキング」どおり（長水路タイム順。長水路タイムのない選手は末尾）</div>`;
+  ${ev.tf?'タイムレース決勝':hasB(ev)?'予選→Ｂ決勝（9〜16位）・決勝（上位8名）':'予選→決勝（上位8名）※申込25名未満のためＢ決勝なし'}<br>並び順・順位は長水路タイム順（長水路タイムのない選手は末尾）</div>`;
   ev.rows.forEach((r,i)=>{const s=r.sw;
     h+=`<button type="button" class="entry-row ${s.fem?'female':'male'}" data-no="${s.no}"><div class="rank num${r.rank<=8?' top':''}">${r.rank}</div>
     <div style="min-width:0"><div class="entry-name">${esc(s.name)}</div><div class="entry-sub">${teamLine(s)}・${esc(s.gr)}</div></div>
@@ -463,7 +459,7 @@ function showRelay(){
   let h='';
   ['メドレーリレー','フリーリレー'].forEach(name=>{const list=RL.filter(r=>r.ev===name);
     const day=name==='メドレーリレー'?SCHED[0]:SCHED[1];
-    h+=`<div class="sec-title">🔄 混合 4×100m ${name}　${list.length}チーム</div><div class="ev-info">📅 ${day.D.label.replace(/^\d日目 /,'')}｜予選 No.${day.rh.n}・決勝 No.${day.rf.n}<br>男女各2名で編成。下は各チームの登録選手（リレーのみの選手を含む）で、泳者・泳順はPDFに記載がありません。</div>`;
+    h+=`<div class="sec-title">🔄 混合 4×100m ${name}　${list.length}チーム</div><div class="ev-info">📅 ${day.D.label.replace(/^\d日目 /,'')}｜予選 No.${day.rh.n}・決勝 No.${day.rf.n}<br>男女各2名で編成。下は各チームの登録選手（リレーのみの選手を含む）です。実際の泳者・泳順を示すものではありません。</div>`;
     list.forEach(r=>{const t=r.team;const mem=t.sw.filter(s=>gOK(s,3));
       h+=`<div class="relay-card"><div class="relay-team">🏊 ${esc(t.disp)}<span class="tag">${esc(r.cls)}</span><span class="tag">${esc(t.pref)}</span><span class="tag num">No.${r.no}</span></div>
       ${[false,true].map(fem=>{const group=mem.filter(s=>s.fem===fem);return group.length?`<div class="relay-label ${fem?'female':'male'}">${fem?'🔴 女子':'🔵 男子'}　${group.length}名</div><div class="relay-members">${group.map(s=>`<button type="button" class="${fem?'f':'m'}" data-no="${s.no}">${esc(s.name)}${s.ev.length?'':'<small>（R）</small>'}</button>`).join('')}</div>`:'';}).join('')||'<div class="relay-members">該当なし</div>'}
@@ -503,7 +499,7 @@ function showKago(){
 }
 /* ---------- tab 4 ---------- */
 function renderInfo(){
-  let h=`<div class="notice"><b>📌 ${esc(DATA.asof.ts)} 時点の${esc(DATA.asof.kind)}データです</b><br>エントリー確認・訂正期間（11月9日〜11日）を経て日本水泳連盟が更新したエントリー受付情報をもとにしています。正式な内容は必ず公式PDFでご確認ください。</div>`;
+  let h=`<div class="notice"><b>📌 ${esc(DATA.asof.ts)} 時点の${esc(DATA.asof.kind)}データです</b></div>`;
   h+=`<div class="sec-title">📅 競技順序</div>`;
   SCHED.forEach((day,di)=>{
     const race=x=>x.ev?`<button type="button" class="race ${x.ev.g==='女子'?'female':'male'}" data-ev="${x.ev.i}"><span class="rn num">${x.n}</span><span>${x.ev.g} ${x.ev.label}</span><span class="rk">${x.kind}${x.kind==='Ｂ決勝'&&!hasB(x.ev)?'（実施なし）':''}・${x.ev.n}名</span></button>`
@@ -519,8 +515,7 @@ function renderInfo(){
       return `<div class="standard-row ${fem?'female':'male'}"><div class="standard-label">${fem?'🔴':'🔵'} ${g}</div>${note?`<div>${esc(note)}</div>`:`<div class="standard-times"><span>短水路 <b class="num">${st.sc}</b></span><span>長水路 <b class="num">${st.lc}</b></span></div>`}</div>`;
     }).join('')}</section>`;
   }).join('')}
-  <div class="ev-info">2025年11月28日以降の公式・公認競技会での記録が対象。男子800m自由形は400m・1500mいずれか、女子1500m自由形は800mの標準記録突破者が出場可。Q は標準記録突破の印です。小文字の q は公式PDFの表記をそのまま載せており、男子800m・女子1500m自由形（他種目の標準記録で出場）や海外選手のタイムなどに付いていますが、公式の説明は見つかっていません。</div>`;
-  h+=`<div class="sec-title">📄 データの出典</div><div class="src">日本水泳連盟 大会ページ（${esc(DATA.asof.ts.slice(5,10))}時点公開分・${esc(DATA.asof.kind)}）<br><a href="https://aquatics.or.jp/tournament/57943/" target="_blank" rel="noopener">https://aquatics.or.jp/tournament/57943/</a><br>種目別エントリー一覧／参加申込集計一覧／登録団体別エントリー一覧／EntryListByTeam／大会要項<br>種目別エントリーランキング／インターハイ公式記録（出身高校の確認）<br>集計一覧の総計（選手${DATA.tot[0]}名・個人${DATA.tot[3]}種目・リレー${DATA.tot[6]}種目・付添票）と全団体で照合済み。順位は公式ランキングPDFの掲載順と全件一致。正式な内容は必ず公式PDFでご確認ください。</div>`;
+  <div class="ev-info">2025年11月28日以降の公式・公認競技会での記録が対象。男子800m自由形は400m・1500mいずれか、女子1500m自由形は800mの標準記録突破者が出場可。Q は標準記録突破の印です。小文字の q は参考表記です（意味は未確認）。</div>`;
   $('result5').innerHTML=h;
 }
 /* ---------- wiring ---------- */
